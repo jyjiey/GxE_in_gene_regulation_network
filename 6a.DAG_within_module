@@ -1,0 +1,151 @@
+#this is a jupyter notebook
+%load_ext autoreload 
+%autoreload 2
+import matplotlib
+import matplotlib.pyplot as plt
+import networkx as nx
+import pandas as pd
+from causaldag import UndirectedGraph
+import itertools
+from sklearn import preprocessing
+import pickle
+from ut_gsp_stable import unknown_target_igsp_stability_selection
+import os
+from IPython.display import Image
+
+%matplotlib inline
+import numpy as np
+from causaldag import unknown_target_igsp
+import causaldag as cd
+import random
+from causaldag import gauss_invariance_suffstat, gauss_invariance_test, MemoizedInvarianceTester, gspo, gsp
+from causaldag import partial_correlation_suffstat, partial_correlation_test, MemoizedCI_Tester
+
+path_in = '/home/gridsan/jyun/dci'
+df_original = pd.read_csv('/home/gridsan/jyun/dci/bd21d_12_bd21d.csv', index_col=0)
+df_original.shape
+df_original.shape[0]
+path_in = '/home/gridsan/jyun/dci'
+df_original1 = pd.read_csv('/home/gridsan/jyun/dci/bd21d_12_bd21c.csv', index_col=0)
+df_original1.shape[0]
+
+df_original2 = pd.read_csv('/home/gridsan/jyun/dci/bd21d_12_bd31d.csv', index_col=0)
+df_original2.shape
+df_original3 = pd.read_csv('/home/gridsan/jyun/dci/bd21d_12_bd31c.csv', index_col=0)
+
+df_original3.shape
+df_original = pd.concat([df_original])
+df_original1 = pd.concat([df_original1,df_original2,df_original3])
+X=df_original
+Y=df_original1
+nsamples, nnodes = df_original.shape
+nsamples
+nnodes
+nodes = set(range(nnodes))
+nodes
+alpha_grid = [0.0001, 0.001, 0.01, 0.05,0.1]
+num_targets = 1
+num_settings = 1
+nodes = set(range(nnodes))
+targets_list = [random.sample(nodes, num_targets) for _ in range(num_settings)]
+setting_list = [dict(known_interventions=[]) for _ in targets_list]
+print(setting_list)
+alpha2=0.0001
+X=X.to_numpy()
+Y=Y.to_numpy()
+df_original.transpose()
+stability_scores = unknown_target_igsp_stability_selection(X, Y, alpha_grid, alpha2, nodes, setting_list, n_samples1=df_original.shape[0],n_samples2=df_original1.shape[0],n_bootstrap_iterations=1000, n_jobs=48, verbose=False,sample_fraction=0.85)
+np.savetxt("/home/gridsan/jyun/dci/adjacency_matrix_bd21d_test_corrected.csv",pd.DataFrame(stability_scores.max(axis=0)), delimiter=",")
+
+##it needs the function of ut_gsp_stable, it is modified from A. Belyaeva et al., “Causal network models of SARS-CoV-2 expression and aging to identify candidates for drug repurposing,” Nat Commun, vol. 12, no. 1, Art. no. 1, Feb. 2021, doi: 10.1038/s41467-021-21056-z.
+
+from causaldag import unknown_target_igsp
+from causaldag import gauss_invariance_suffstat, gauss_invariance_test, MemoizedInvarianceTester
+from causaldag import partial_correlation_suffstat, partial_correlation_test, MemoizedCI_Tester
+from causaldag import UndirectedGraph
+import causaldag as cd
+import random
+import numpy as np
+import itertools
+from joblib import Parallel, delayed
+from sklearn.utils import safe_mask
+from sklearn.utils.random import sample_without_replacement
+from typing import Dict, Optional, Any, List, Set, Union
+
+def run_unknown_target_igsp(
+    X,
+    Y,
+    alpha,
+    alpha2,
+    nodes: set,
+    setting_list):
+    # obtain sufficient statistics (causaldag.utils.ci_tests)
+    Y=[Y]
+    obs_suffstat = partial_correlation_suffstat(X)
+    invariance_suffstat = gauss_invariance_suffstat(X,Y)
+    # define CI tester
+    ci_tester = MemoizedCI_Tester(partial_correlation_test, obs_suffstat, alpha=alpha)
+    invariance_tester = MemoizedInvarianceTester(gauss_invariance_test, invariance_suffstat, alpha=alpha2)
+    # run GSP
+    print(invariance_tester)
+    est_dag, est_targets_list = unknown_target_igsp(setting_list, nodes, ci_tester, invariance_tester)
+    # convert dag to adjacency matrix, here specifying that the columns are "source" axis, so edge from j->i
+    est_cpdag, _ = est_dag.cpdag().to_amat(source_axis=1)
+
+    return est_cpdag
+def unknown_target_igsp_stability_selection(
+    X, 
+    Y,
+    alpha_grid, 
+    alpha2,
+    nodes: set,
+    setting_list,
+    n_samples1,
+    n_samples2,
+    verbose: bool = False,
+    sample_fraction: float = 0.6,
+    n_bootstrap_iterations: int = 100,
+    bootstrap_threshold: float = 0.5,
+    n_jobs: int = 1,
+    random_state: int = None):
+    n_variables = len(nodes)
+    n_params = len(alpha_grid)
+    hyperparams = alpha_grid
+    stability_scores = np.zeros((n_params, n_variables, n_variables))
+
+    for idx, param in enumerate(hyperparams):
+        print(param)
+        if verbose > 0:
+            print(
+                "Fitting estimator for alpha = %.5f with %d bootstrap iterations" %
+                (param, n_bootstrap_iterations))
+
+        bootstrap_samples1 = bootstrap_generator(n_bootstrap_iterations, sample_fraction,
+                                                 n_samples1)
+        bootstrap_samples2 = bootstrap_generator(n_bootstrap_iterations, sample_fraction,
+                                                 n_samples2)
+        print(X.shape)
+        bootstrap_results = Parallel(n_jobs, verbose=verbose
+                                     )(delayed(run_unknown_target_igsp)(X[safe_mask(X, subsample1), :],
+                                                    Y[safe_mask(Y, subsample2), :],
+                                                    alpha=param,
+                                                    alpha2=param,
+                                                    nodes=nodes,
+                                                    setting_list=setting_list)
+                                       for subsample1,subsample2 in zip(bootstrap_samples1,bootstrap_samples2))
+
+        # calculate stability scores
+        stability_scores[idx] = np.array(bootstrap_results).mean(axis=0)
+
+    return stability_scores
+
+
+def bootstrap_generator(n_bootstrap_iterations, sample_fraction, n_samples, random_state=None):
+    """Generates bootstrap samples from dataset."""
+    n_subsamples = np.floor(sample_fraction * n_samples).astype(int)
+    subsamples = []
+    for _ in range(n_bootstrap_iterations):
+        subsample = sample_without_replacement(n_samples, n_subsamples, random_state=None)
+        subsamples.append(subsample)
+    return subsamples
+
