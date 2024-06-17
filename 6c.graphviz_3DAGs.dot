@@ -2,7 +2,7 @@
 
 digraph foo {
     graph [bgcolor=transparent, fontcolor=black, ratio=fill, splines=TRUE, rank=same, size="6.5,3", ranksep=0.05];
-    node [label="\N", shape=Mrecord, fixedsize=false, fillcolor=transparent, color=black, fontcolor=black, fontsize=20, margin=0.1];
+    node [label="\N", shape=Mrecord, fixedsize=false, fillcolor=transparent, color=black, fontcolor=black, fontsize=20, margin=0.1,fontname="Arial"];
     edge [headport=center, color=black, dir=none, weight="1.0", fontcolor=black, arrowhead=none, arrowtail=none, fontsize=14, labelfontsize=11, arrowsize=1, style=solid, minlen=1,recipEdges=distinct];
     graph [bb="0 0 1811 1811"];
 "Bradi1g13760.2" [label="{1g13760|ABA biosynthesis \n9−cis− epoxycarotenoid \ndioxygenase}",fillcolor="#ff000080", style="rounded,filled"];
@@ -79,7 +79,7 @@ digraph foo {
 ##bd31d12 cutoff 0.95
 digraph foo {
     graph [bgcolor=transparent, fontcolor=black, ratio=fill, splines=TRUE, rank=same, size="6.5,3", ranksep=0.4];
-    node [label="\N", shape=Mrecord, fixedsize=false, fillcolor=transparent, color=black, fontcolor=black, fontsize=20, margin=0.1];
+    node [label="\N", shape=Mrecord, fixedsize=false, fillcolor=transparent, color=black, fontcolor=black, fontsize=20, margin=0.1,fontname="Arial"];
     edge [headport=center, color=black, dir=none, weight="1.0", fontcolor=black, arrowhead=none, arrowtail=none, fontsize=14, labelfontsize=11, arrowsize=1, style=solid, minlen=1,recipEdges=distinct];
     graph [bb="0 0 1811 1811"];
 	"Bradi1g00980.3" [label="{1g00980|30s ribosomal \nprotein}",fillcolor=white, style="rounded,filled"];
@@ -190,7 +190,7 @@ digraph foo {
 ##bd21c10 cutoff 0.97
 digraph foo {
     graph [bgcolor=transparent, fontcolor=black, ratio=fill, splines=TRUE, rank=same, size="6.5,3", ranksep=0.3];
-    node [label="\N", shape=Mrecord, fixedsize=false, fillcolor=transparent, color=black, fontcolor=black, fontsize=30, margin=0.1];
+    node [label="\N", shape=Mrecord, fixedsize=false, fillcolor=transparent, color=black, fontcolor=black, fontsize=30, margin=0.1,fontname="Arial"];
     edge [headport=center, color=black, dir=none, weight="1." fontcolor=black, arrowhead=none, arrowtail=none, fontsize=14, labelfontsize=11, arrowsize=2, style=solid, minlen=1];
     graph [bb="0 0 1811 1811"];
     # "Bradi1g29680.1" [label="Bradi1g29680.1", height="0.5", width="0.75"];
