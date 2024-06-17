@@ -91,7 +91,7 @@ bd31dmembership<-cbind(bd31dmembership0,bd31dmembershiploose,bd31dmembershipstri
 
 ##all change to loose network module number: check is it the same for reference module number to check if there's any difference 
 total=16207
-
+pcutoff=10e-12
 bd21cmembership<-cbind(bd21cmembership0,bd21cmembershiploose,bd21cmembershipstrict)
 
 TOM1_NEW_membership_para1<-bd21cmembership[,2]
@@ -112,7 +112,7 @@ for (fmod in 1: n1Mods)
 pTbl[fmod, cmod]<-MSET(genesets, n=total, lower.tail=FALSE)$p.value	
 }
 overlap = matrix(0, nrow = n1Mods, ncol = n2Mods);
-overlap[which(pTbl <10e-13)]<-1
+overlap[which(pTbl <pcutoff)]<-1
 ###add names to 4,5,6
 replacement<-matrix(0,dim(overlap)[2],4)
 for (i in 1:dim(overlap)[2]){	
@@ -205,7 +205,7 @@ for (fmod in 1: n1Mods)
 pTbl[fmod, cmod]<-MSET(genesets, n=total, lower.tail=FALSE)$p.value	
 }
 overlap = matrix(0, nrow = n1Mods, ncol = n2Mods);
-overlap[which(pTbl <10e-13)]<-1
+overlap[which(pTbl <pcutoff)]<-1
 ###add names to 4,5,6
 replacement<-matrix(0,dim(overlap)[2],4)
 for (i in 1:dim(overlap)[2]){	
@@ -301,7 +301,7 @@ for (fmod in 1: n1Mods)
 pTbl[fmod, cmod]<-MSET(genesets, n=total, lower.tail=FALSE)$p.value	
 }
 overlap = matrix(0, nrow = n1Mods, ncol = n2Mods);
-overlap[which(pTbl <10e-13)]<-1
+overlap[which(pTbl <pcutoff)]<-1
 ###add names to 4,5,6
 replacement<-matrix(0,dim(overlap)[2],4)
 for (i in 1:dim(overlap)[2]){	
@@ -394,7 +394,7 @@ for (fmod in 1: n1Mods)
 pTbl[fmod, cmod]<-MSET(genesets, n=total, lower.tail=FALSE)$p.value	
 }
 overlap = matrix(0, nrow = n1Mods, ncol = n2Mods);
-overlap[which(pTbl <10e-13)]<-1
+overlap[which(pTbl <pcutoff)]<-1
 ###add names to 4,5,6
 replacement<-matrix(0,dim(overlap)[2],4)
 for (i in 1:dim(overlap)[2]){	
@@ -490,7 +490,7 @@ for (fmod in 1: n1Mods)
 pTbl[fmod, cmod]<-MSET(genesets, n=total, lower.tail=FALSE)$p.value	
 }
 overlap = matrix(0, nrow = n1Mods, ncol = n2Mods);
-overlap[which(pTbl <10e-13)]<-1
+overlap[which(pTbl <pcutoff)]<-1
 ###add names to 4,5,6
 replacement<-matrix(0,dim(overlap)[2],4)
 for (i in 1:dim(overlap)[2]){	
@@ -583,7 +583,7 @@ for (fmod in 1: n1Mods)
 pTbl[fmod, cmod]<-MSET(genesets, n=total, lower.tail=FALSE)$p.value	
 }
 overlap = matrix(0, nrow = n1Mods, ncol = n2Mods);
-overlap[which(pTbl <10e-13)]<-1
+overlap[which(pTbl <pcutoff)]<-1
 ###add names to 4,5,6
 replacement<-matrix(0,dim(overlap)[2],4)
 for (i in 1:dim(overlap)[2]){	
@@ -679,7 +679,7 @@ for (fmod in 1: n1Mods)
 pTbl[fmod, cmod]<-MSET(genesets, n=total, lower.tail=FALSE)$p.value	
 }
 overlap = matrix(0, nrow = n1Mods, ncol = n2Mods);
-overlap[which(pTbl <10e-13)]<-1
+overlap[which(pTbl <pcutoff)]<-1
 ###add names to 4,5,6
 replacement<-matrix(0,dim(overlap)[2],4)
 for (i in 1:dim(overlap)[2]){	
@@ -772,7 +772,7 @@ for (fmod in 1: n1Mods)
 pTbl[fmod, cmod]<-MSET(genesets, n=total, lower.tail=FALSE)$p.value	
 }
 overlap = matrix(0, nrow = n1Mods, ncol = n2Mods);
-overlap[which(pTbl <10e-13)]<-1
+overlap[which(pTbl <pcutoff)]<-1
 ###add names to 4,5,6
 replacement<-matrix(0,dim(overlap)[2],4)
 for (i in 1:dim(overlap)[2]){	
